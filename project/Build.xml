@@ -14,7 +14,11 @@
 	<set name="iphoneos" value="1" if="ios" unless="simulator" />
 	<set name="win_desktop" value="1" if="windows" unless="winrt"/>
 	
-	<set name="NATIVE_DEV" value="${haxelib:lime-build}" unless="NATIVE_DEV" />
+	<!-- <set name="NATIVE_DEV" value="${haxelib:lime-build}" unless="NATIVE_DEV" /> -->
+	<set name="STATIC_LIBS" value="lib/nme-state" unless="STATIC_LIBS" />
+	<set name="SHARED_SRC" value="lib/nme/project/src" unless="SHARED_SRC" />
+	<set name="SHARED_INCLUDE1" value="lib/nme/include" unless="SHARED_INCLUDE1" />
+	<set name="SHARED_INCLUDE2" value="lib/nme/project/include" unless="SHARED_INCLUDE2" />
 	<!-- <error value="Error: You must clone 'openfl-native-dev' and 'haxelib dev' the directory before you can rebuild openfl-native" unless="NATIVE_DEV" /> -->
 	
 	<set name="has_window" value="1" if="LIME_SDL" />
@@ -86,18 +90,20 @@
 	
 	<files id="win_desktop">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
-		<compilerflag value="-I${NATIVE_DEV}/include"/>
-		<compilerflag value="-I${NATIVE_DEV}/include/SDL12" if="sdl" />
-		<compilerflag value="-I${NATIVE_DEV}/include/SDL2" if="sdl2" />
-		<compilerflag value="-I${NATIVE_DEV}/include/openal" if="openal" />
+		<compilerflag value="-I${STATIC_LIBS}/include"/>
+		<compilerflag value="-I${STATIC_LIBS}/include/SDL12" if="sdl" />
+		<compilerflag value="-I${STATIC_LIBS}/include/SDL2" if="sdl2" />
+		<compilerflag value="-I${STATIC_LIBS}/include/openal" if="openal" />
 		<compilerflag value="-Isrc/sound/openal"/>		
 		<file name="src/platform/windows/GDIFont.cpp"/>
 		<file name="src/platform/windows/System.cpp" />
 		<!-- Use SDL on windows too ? -->
 		<!-- <file name="src/platform/windows/SimpleFrame.cpp" unless="sdl"/> -->
 		<!-- <file name="src/backend/sdl/SDLSound.cpp" unless="sdl"/> -->
-		<file name="src/common/empty/Sound.cpp" if="glfw" unless="openal" />
+		<file name="${SHARED_SRC}/empty/Sound.cpp" if="glfw" unless="openal" />
 		<file name="src/sound/openal/OpenALSound.cpp" if="openal"/>
 		<compilerflag value="-DAL_LIBTYPE_STATIC" if="openal"/>
 
@@ -105,35 +111,39 @@
 	
 	
 	<files id="winrt_shaders">
-		<hlsl name="src\\platform\\winrt\\SimplePixelShader.hlsl" profile="ps_4_0" variable="gPixelShader" target="src\\platform\\winrt\\shaders\\SimplePixelShader.h"/>
-		<hlsl name="src\\platform\\winrt\\SimpleVertexShader.hlsl" profile="vs_4_0" variable="gVertexShader" target="src\\platform\\winrt\\shaders\\SimpleVertexShader.h"/>
-		<file name="src\\platform\\winrt/ShaderData.cpp" />
+		<hlsl name="${SHARED_SRC}\\winrt\\SimplePixelShader.hlsl" profile="ps_4_0" variable="gPixelShader" target="${SHARED_SRC}\\winrt\\shaders\\SimplePixelShader.h"/>
+		<hlsl name="${SHARED_SRC}\\winrt\\SimpleVertexShader.hlsl" profile="vs_4_0" variable="gVertexShader" target="${SHARED_SRC}\\winrt\\shaders\\SimpleVertexShader.h"/>
+		<file name="${SHARED_SRC}\\winrt/ShaderData.cpp" />
 	</files>
 	
 	
 	<files id="winrt">
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
-		<file name="src/platform/winrt/WinRTStage.cpp" />
-		<file name="src/platform/winrt/DX11Context.cpp" />
-		<file name="src/platform/winrt/DX11Font.cpp" />
-		<file name="src/platform/winrt/System.cpp" />
-		<file name="src/platform/winrt/MediaFoundation.cpp" />
-		<file name="src/platform/winrt/Direct3DBase.cpp" />
-		<file name="src/platform/winrt/URL.cpp" />
+		<file name="${SHARED_SRC}/winrt/WinRTStage.cpp" />
+		<file name="${SHARED_SRC}/winrt/DX11Context.cpp" />
+		<file name="${SHARED_SRC}/winrt/DX11Font.cpp" />
+		<file name="${SHARED_SRC}/winrt/System.cpp" />
+		<file name="${SHARED_SRC}/winrt/MediaFoundation.cpp" />
+		<file name="${SHARED_SRC}/winrt/Direct3DBase.cpp" />
+		<file name="${SHARED_SRC}/winrt/URL.cpp" />
 	</files>
 	
 	
 	<files id="linux">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
 		<compilerflag value="-Isrc/sound/openal" if="openal" />
-		<compilerflag value="-I${NATIVE_DEV}/include" />
-		<compilerflag value="-I${NATIVE_DEV}/include/openal" if="openal" />
+		<compilerflag value="-I${STATIC_LIBS}/include" />
+		<compilerflag value="-I${STATIC_LIBS}/include/openal" if="openal" />
 		<compilerflag value="-DSDL_OGL" if="sdl"/>
-		<file name="src/platform/linux/NativeFont.cpp"/>
-		<file name="src/platform/linux/System.cpp"/>
-		<file name="src/common/empty/URL.cpp" if="nocurl" />
-		<file name="src/common/empty/Sound.cpp" if="noopenal" />
+		<file name="${SHARED_SRC}/linux/NativeFont.cpp"/>
+		<file name="${SHARED_SRC}/linux/System.cpp"/>
+		<file name="${SHARED_SRC}/empty/URL.cpp" if="nocurl" />
+		<file name="${SHARED_SRC}/empty/Sound.cpp" if="noopenal" />
 		<!-- <file name="src/common/empty/HardwareContext.cpp" unless="has_window" /> -->
 		<file name="src/sound/openal/OpenALSound.cpp" if="openal" />
 		
@@ -142,8 +152,10 @@
 	
 	<files id="iphone">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
-		<compilerflag value="-I${NATIVE_DEV}/include"/>
+		<compilerflag value="-I${STATIC_LIBS}/include"/>
 		<compilerflag value="-Isrc/sound/openal"/>
 		<compilerflag value="-DLIME_FORCE_GLES1" if="LIME_FORCE_GLES1"/>
 		<file name="src/platform/ios/UIStageView.mm"/>
@@ -160,9 +172,11 @@
 	
 	<files id="android">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
-		<compilerflag value="-I${NATIVE_DEV}/include"/>
-		<compilerflag value="-I${NATIVE_DEV}/include/openal" if="openal" />
+		<compilerflag value="-I${STATIC_LIBS}/include"/>
+		<compilerflag value="-I${STATIC_LIBS}/include/openal" if="openal" />
 		<compilerflag value="-Isrc/sound/openal"/>
 		<file name="src/platform/android/AndroidCommon.cpp" />
 		<file name="src/platform/android/AndroidSound.cpp" unless="openal"/>
@@ -178,9 +192,11 @@
 	
 	<files id="emscripten">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
-		<file name="src/platform/linux/NativeFont.cpp"/>
-		<file name="src/platform/emscripten/System.cpp"/>
+		<file name="${SHARED_SRC}/linux/NativeFont.cpp"/>
+		<file name="${SHARED_SRC}/emscripten/System.cpp"/>
 		
 	</files>
 	
@@ -189,42 +205,48 @@
 	
 	<files id="webos">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
 		<compilerflag value="-I${PalmPDK}/include/SDL" />
-		<compilerflag value="-I${NATIVE_DEV}/include"/>
-		<file name="src/platform/linux/NativeFont.cpp"/>
-		<file name="src/platform/webos/System.cpp"/>
+		<compilerflag value="-I${STATIC_LIBS}/include"/>
+		<file name="${SHARED_SRC}/linux/NativeFont.cpp"/>
+		<file name="${SHARED_SRC}/webos/System.cpp"/>
 		
 	</files>
 	
 	
 	<files id="blackberry">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
 		<compilerflag value="-I${QNX_TARGET}/usr/include" />
-		<compilerflag value="-I${NATIVE_DEV}/include"/>
-		<file name="src/platform/linux/NativeFont.cpp"/>
-		<file name="src/platform/blackberry/System.cpp"/>
+		<compilerflag value="-I${STATIC_LIBS}/include"/>
+		<file name="${SHARED_SRC}/linux/NativeFont.cpp"/>
+		<file name="${SHARED_SRC}/blackberry/System.cpp"/>
 		
 	</files>
 	
 	
 	<files id="tizen">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
 		<!-- <compilerflag value="-I${QNX_TARGET}/usr/include" /> -->
 		<compilerflag value="-I${TIZEN_PLATFORM}/usr/include/osp"/>
-		<compilerflag value="-I${NATIVE_DEV}/include"/>
-		<compilerflag value="-I${NATIVE_DEV}/include/openal" if="openal" />
+		<compilerflag value="-I${STATIC_LIBS}/include"/>
+		<compilerflag value="-I${STATIC_LIBS}/include/openal" if="openal" />
 		<compilerflag value="-Isrc/sound/openal"/>
 		<compilerflag value="-D_APP_LOG" />
-		<file name="src/platform/linux/NativeFont.cpp"/>
-		<file name="src/platform/tizen/TizenApplication.cpp"/>
+		<file name="${SHARED_SRC}/linux/NativeFont.cpp"/>
+		<file name="${SHARED_SRC}/tizen/TizenApplication.cpp"/>
 		<!-- <file name="src/platform/tizen/TizenUIApp.cpp"/>
 		<file name="src/platform/tizen/TizenUIFrame.cpp"/> -->
-		<file name="src/platform/tizen/TizenStage.cpp"/>
-		<file name="src/platform/tizen/TizenFrame.cpp"/>
-		<file name="src/platform/tizen/System.cpp" />
+		<file name="${SHARED_SRC}/tizen/TizenStage.cpp"/>
+		<file name="${SHARED_SRC}/tizen/TizenFrame.cpp"/>
+		<file name="${SHARED_SRC}/tizen/System.cpp" />
 		<file name="src/sound/openal/OpenALSound.cpp" if="openal"/>
 		
 	</files>
@@ -232,23 +254,25 @@
 	
 	<files id="main">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
 		<file name="src/Test.cpp"/>
 		
 	</files>
 	
 	
-	<set name="THIRDPARTY_LIBS" value="${NATIVE_DEV}/lib/Mac${M64}/" if="macos"/>
-	<set name="THIRDPARTY_LIBS" value="${NATIVE_DEV}/lib/Windows/" if="windows" unless="winrt"/>
-	<set name="THIRDPARTY_LIBS" value="${NATIVE_DEV}/lib/WinRTx86/" if="winrt"/>
-	<set name="THIRDPARTY_LIBS" value="${NATIVE_DEV}/lib/webOS/" if="webos" />
-	<set name="THIRDPARTY_LIBS" value="${NATIVE_DEV}/lib/Linux${M64}/" if="linux"/>
-	<set name="THIRDPARTY_LIBS" value="${NATIVE_DEV}/lib/RPi/" if="rpi"/>
-	<set name="THIRDPARTY_LIBS" value="${NATIVE_DEV}/lib/Android/" if="android"/>
-	<set name="THIRDPARTY_LIBS" value="${NATIVE_DEV}/lib/iPhone/" if="iphone"/>
-	<set name="THIRDPARTY_LIBS" value="${NATIVE_DEV}/lib/BlackBerry/" if="blackberry"/>
-	<set name="THIRDPARTY_LIBS" value="${NATIVE_DEV}/lib/Emscripten/" if="emscripten"/>
-	<set name="THIRDPARTY_LIBS" value="${NATIVE_DEV}/lib/Tizen/" if="tizen"/>
+	<set name="THIRDPARTY_LIBS" value="${STATIC_LIBS}/lib/Mac${M64}/" if="macos"/>
+	<set name="THIRDPARTY_LIBS" value="${STATIC_LIBS}/lib/Windows/" if="windows" unless="winrt"/>
+	<set name="THIRDPARTY_LIBS" value="${STATIC_LIBS}/lib/WinRTx86/" if="winrt"/>
+	<set name="THIRDPARTY_LIBS" value="${STATIC_LIBS}/lib/webOS/" if="webos" />
+	<set name="THIRDPARTY_LIBS" value="${STATIC_LIBS}/lib/Linux${M64}/" if="linux"/>
+	<set name="THIRDPARTY_LIBS" value="${STATIC_LIBS}/lib/RPi/" if="rpi"/>
+	<set name="THIRDPARTY_LIBS" value="${STATIC_LIBS}/lib/Android/" if="android"/>
+	<set name="THIRDPARTY_LIBS" value="${STATIC_LIBS}/lib/iPhone/" if="iphone"/>
+	<set name="THIRDPARTY_LIBS" value="${STATIC_LIBS}/lib/BlackBerry/" if="blackberry"/>
+	<set name="THIRDPARTY_LIBS" value="${STATIC_LIBS}/lib/Emscripten/" if="emscripten"/>
+	<set name="THIRDPARTY_LIBS" value="${STATIC_LIBS}/lib/Tizen/" if="tizen"/>
 	<set name="THIRDPARTY_LIBS" value="${GPH_ROOT}/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi/sys-root/usr/lib/" if="gph"/>
 	
 	<set name="SLIBEXT" value=".lib" if="windows"/>
@@ -259,12 +283,14 @@
 	
 	<files id="common">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
 		<compilerflag value="-I${PalmPDK}/include/SDL" if="webos" />
-		<compilerflag value="-I${NATIVE_DEV}/include" unless="gph"/>
+		<compilerflag value="-I${STATIC_LIBS}/include" unless="gph"/>
 		<compilerflag value="-I${PalmPDK}/include/SDL" if="webos" />
-		<compilerflag value="-I${NATIVE_DEV}/include/SDL12" if="sdl" unless="dynamic_sdl"/>
-		<compilerflag value="-I${NATIVE_DEV}/include/SDL2" if="sdl2" />
+		<compilerflag value="-I${STATIC_LIBS}/include/SDL12" if="sdl" unless="dynamic_sdl"/>
+		<compilerflag value="-I${STATIC_LIBS}/include/SDL2" if="sdl2" />
 		<compilerflag value="-I${GPH_ROOT}/gcc-4.2.4-glibc-2.7-eabi/arm-gph-linux-gnueabi/sys-root/usr/include" if="gph"/>
 		<compilerflag value="-I${TIZEN_SDK}/platforms/tizen2.2/rootstraps/tizen-device-2.2.native/usr/include" if="tizen" />
 		<compilerflag value="-I${TIZEN_SDK}/platforms/tizen2.2/rootstraps/tizen-device-2.2.native/usr/include/osp" if="tizen" />
@@ -283,67 +309,65 @@
 		<compilerflag value="-DLIME_FORCE_GLES1" if="LIME_FORCE_GLES1"/>
 		<compilerflag value="-DLIME_PREMULTIPLIED_ALPHA" if="LIME_PREMULTIPLIED_ALPHA"/>
 		<compilerflag value="-Wno-conversion" if="linux"/>
-
-		<!-- <file name="src/common/Surface.cpp"/> -->
-		<file name="src/renderer/common/Surface.cpp"/>
-		<file name="src/renderer/common/HardwareSurface.cpp"/>
-		<file name="src/renderer/common/SimpleSurface.cpp"/>
-		<file name="src/renderer/common/BitmapCache.cpp"/>
-		<file name="src/common/Utils.cpp"/>
-		<file name="src/common/Geom.cpp"/>
-		<file name="src/common/Graphics.cpp"/>
-		<file name="src/common/GraphicsData.cpp"/>
-		<file name="src/common/Matrix.cpp"/>
-		<file name="src/common/CachedExtent.cpp"/>
-		<file name="src/common/TextField.cpp"/>
-		<file name="src/common/Font.cpp"/>
-		<file name="src/common/FreeType.cpp" />
-		<file name="src/common/Tilesheet.cpp"/>
-		<file name="src/common/Display.cpp"/>
-		<file name="src/common/ColorTransform.cpp"/>
-		<file name="src/common/Hardware.cpp" unless="directfb"/>
-		<file name="src/common/Tessellate.cpp"/>
-		<file name="src/common/Filters.cpp"/>
-		<file name="src/common/ExternalInterface.cpp"/>
-		<file name="src/common/Cursors.cpp"/>
-		<file name="src/common/Input.cpp" unless="iphone" />
-		<file name="src/common/SurfaceIO.cpp" unless="sdl_image" />
-		<file name="src/common/ManagedStage.cpp" unless="winrt" />
-		<file name="src/common/CURL.cpp" unless="nocurl"/>
-		<file name="src/common/Lzma.cpp"/>
-		<file name="src/common/Thread.cpp"/>
-		<file name="src/common/Audio.cpp" if="openal"/>
-		<file name="src/common/video/TheoraVideo.cpp" if="theora" />
-		<file name="src/common/empty/Video.cpp" unless="theora" />
 		
-		<file name="src/common/XML/tinystr.cpp"/>
-		<file name="src/common/XML/tinyxml.cpp"/>
-		<file name="src/common/XML/tinyxmlerror.cpp"/>
-		<file name="src/common/XML/tinyxmlparser.cpp"/>
-		
-		<file name="src/renderer/software/AlphaMask.cpp"/>
-		<file name="src/renderer/software/BitmapFill.cpp"/>
-		<file name="src/renderer/software/BitmapFillPerspective.cpp"/>
-		<file name="src/renderer/software/GradientFill.cpp"/>
-		<file name="src/renderer/software/LineRender.cpp"/>
-		<file name="src/renderer/software/PointRenderer.cpp"/>
-		<file name="src/renderer/software/PolygonRender.cpp"/>
-		<file name="src/renderer/software/SoftwareRenderer.cpp"/>
-		<file name="src/renderer/software/SolidFill.cpp"/>
-		<file name="src/renderer/software/SolidRender.cpp"/>
-		<file name="src/renderer/software/TileRenderer.cpp"/>
-		<file name="src/renderer/software/TriangleRender.cpp"/>
+		<file name="${SHARED_SRC}/common/Surface.cpp"/>
+		<file name="${SHARED_SRC}/common/Utils.cpp"/>
+		<file name="${SHARED_SRC}/common/Geom.cpp"/>
+		<file name="${SHARED_SRC}/common/Graphics.cpp"/>
+		<file name="${SHARED_SRC}/common/GraphicsData.cpp"/>
+		<file name="${SHARED_SRC}/common/Matrix.cpp"/>
+		<file name="${SHARED_SRC}/common/CachedExtent.cpp"/>
+		<file name="${SHARED_SRC}/common/TextField.cpp"/>
+		<file name="${SHARED_SRC}/common/Font.cpp"/>
+		<file name="${SHARED_SRC}/common/FreeType.cpp" />
+		<file name="${SHARED_SRC}/common/Tilesheet.cpp"/>
+		<file name="${SHARED_SRC}/common/Display.cpp"/>
+		<file name="${SHARED_SRC}/common/ColorTransform.cpp"/>
+		<file name="${SHARED_SRC}/common/Hardware.cpp" />
+		<file name="${SHARED_SRC}/common/Tessellate.cpp"/>
+		<file name="${SHARED_SRC}/common/Filters.cpp"/>
+		<file name="${SHARED_SRC}/common/ExternalInterface.cpp"/>
+		<file name="${SHARED_SRC}/common/Cursors.cpp"/>
+		<file name="${SHARED_SRC}/common/Input.cpp" unless="iphone" />
+		<file name="${SHARED_SRC}/common/SurfaceIO.cpp" unless="sdl_image" />
+		<file name="${SHARED_SRC}/common/ManagedStage.cpp" unless="winrt" />
+		<file name="${SHARED_SRC}/common/CURL.cpp" unless="nocurl"/>
+		<file name="${SHARED_SRC}/common/Lzma.cpp"/>
+		<file name="${SHARED_SRC}/common/Thread.cpp"/>
+		<!--<file name="common/Audio.cpp" if="openal"/>-->
+		<file name="${SHARED_SRC}/video/TheoraVideo.cpp" if="theora" />
+		<file name="${SHARED_SRC}/empty/Video.cpp" unless="theora" />
 
-		<file name="src/common/empty/S3D.cpp" unless="android"/>
+		<file name="${SHARED_SRC}/common/XML/tinystr.cpp"/>
+		<file name="${SHARED_SRC}/common/XML/tinyxml.cpp"/>
+		<file name="${SHARED_SRC}/common/XML/tinyxmlerror.cpp"/>
+		<file name="${SHARED_SRC}/common/XML/tinyxmlparser.cpp"/>
+
+		<file name="${SHARED_SRC}/software-renderer/AlphaMask.cpp"/>
+		<file name="${SHARED_SRC}/software-renderer/BitmapFill.cpp"/>
+		<file name="${SHARED_SRC}/software-renderer/BitmapFillPerspective.cpp"/>
+		<file name="${SHARED_SRC}/software-renderer/GradientFill.cpp"/>
+		<file name="${SHARED_SRC}/software-renderer/LineRender.cpp"/>
+		<file name="${SHARED_SRC}/software-renderer/PointRenderer.cpp"/>
+		<file name="${SHARED_SRC}/software-renderer/PolygonRender.cpp"/>
+		<file name="${SHARED_SRC}/software-renderer/SoftwareRenderer.cpp"/>
+		<file name="${SHARED_SRC}/software-renderer/SolidFill.cpp"/>
+		<file name="${SHARED_SRC}/software-renderer/SolidRender.cpp"/>
+		<file name="${SHARED_SRC}/software-renderer/TileRenderer.cpp"/>
+		<file name="${SHARED_SRC}/software-renderer/TriangleRender.cpp"/>
+		
+		<!-- <file name="src/common/empty/S3D.cpp" unless="android"/> -->
 	</files>
 	
 	<files id="opengl">
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
 		<compilerflag value="-I${PalmPDK}/include/SDL" if="webos" />
-		<compilerflag value="-I${NATIVE_DEV}/include" unless="gph"/>
+		<compilerflag value="-I${STATIC_LIBS}/include" unless="gph"/>
 		<compilerflag value="-I${PalmPDK}/include/SDL" if="webos" />
-		<compilerflag value="-I${NATIVE_DEV}/include/SDL12" if="sdl" unless="dynamic_sdl"/>
-		<compilerflag value="-I${NATIVE_DEV}/include/SDL2" if="sdl2" />
+		<compilerflag value="-I${STATIC_LIBS}/include/SDL12" if="sdl" unless="dynamic_sdl"/>
+		<compilerflag value="-I${STATIC_LIBS}/include/SDL2" if="sdl2" />
 		<compilerflag value="-I/opt/vc/include" if="rpi"/>
 		<compilerflag value="-I/opt/vc/include/interface/vcos/pthreads/" if="rpi"/>
 		<compilerflag value="-I${QNX_TARGET}/usr/include" if="blackberry"/>
@@ -360,25 +384,24 @@
 		<compilerflag value="-DLIME_PREMULTIPLIED_ALPHA" if="LIME_PREMULTIPLIED_ALPHA"/>
 		<compilerflag value="-Wno-conversion" if="linux"/>
 		
-		<file name="src/renderer/opengl/OpenGLInit.cpp"/>
-		<file name="src/renderer/opengl/OpenGLContext.cpp"/>
+		<!-- <file name="${SHARED_SRC}/opengl/OpenGLInit.cpp"/> -->
+		<file name="${SHARED_SRC}/opengl/OpenGLContext.cpp"/>
 		<!-- <file name="src/renderer/opengl/OpenGL2Context.cpp"/> -->
-		<file name="src/renderer/opengl/OpenGLS3D.cpp" if="android" />
-		<file name="src/renderer/opengl/OpenGLTexture.cpp"/>
-		<file name="src/renderer/opengl/OpenGLProgram.cpp"/>
-		<file name="src/renderer/opengl/OpenGLShaders.cpp"/>
-		<file name="src/renderer/opengl/OGLExport.cpp" unless="LIME_FORCE_GLES1"/>
-		<file name="src/renderer/opengl/Egl.cpp" if="limeegl"/>
+		<file name="${SHARED_SRC}/opengl/OpenGLS3D.cpp" if="android" />
+		<file name="${SHARED_SRC}/opengl/OGLTexture.cpp"/>
+		<file name="${SHARED_SRC}/opengl/OGLShaders.cpp"/>
+		<file name="${SHARED_SRC}/opengl/OGLExport.cpp" unless="LIME_FORCE_GLES1"/>
+		<file name="${SHARED_SRC}/opengl/Egl.cpp" if="limeegl"/>
 	</files>
 	
 	<files id="common_lzma">
 		<compilerflag value="-D_7ZIP_ST" unless="win_desktop"/>
 		
-		<file name="src/common/lzma/LzFind.c" />
-		<file name="src/common/lzma/LzmaDec.c" />
-		<file name="src/common/lzma/LzmaEnc.c" />
-		<file name="src/common/lzma/LzFindMt.c" if="win_desktop" />
-		<file name="src/common/lzma/Threads.c" if="win_desktop" />
+		<file name="${SHARED_SRC}/lzma/LzFind.c" />
+		<file name="${SHARED_SRC}/lzma/LzmaDec.c" />
+		<file name="${SHARED_SRC}/lzma/LzmaEnc.c" />
+		<file name="${SHARED_SRC}/lzma/LzFindMt.c" if="win_desktop" />
+		<file name="${SHARED_SRC}/lzma/Threads.c" if="win_desktop" />
 	</files>
 	
 	<set name="tool" value="exe" unless="iphone"/>
@@ -428,39 +451,44 @@
 	
 	<files id="sdl">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
 		<compilerflag value="-I${PalmPDK}/include/SDL" if="webos" />
-		<compilerflag value="-I${NATIVE_DEV}/include" if="sdl_static"/>
-		<compilerflag value="-I${NATIVE_DEV}/include/SDL12" if="sdl_static"/>
-		<compilerflag value="-I${NATIVE_DEV}/include" if="webos"/>
+		<compilerflag value="-I${STATIC_LIBS}/include" if="sdl_static"/>
+		<compilerflag value="-I${STATIC_LIBS}/include/SDL12" if="sdl_static"/>
+		<compilerflag value="-I${STATIC_LIBS}/include" if="webos"/>
 		<compilerflag value="${sdl_dynamic_include1}" if="dynamic_sdl"/>
 		<compilerflag value="${sdl_dynamic_include2}" if="dynamic_sdl"/>
 		<compilerflag value="-DDYNAMIC_SDL" if="dynamic_sdl" />
 		<compilerflag value="-DLIME_MIXER" />
 		<compilerflag value="-DSDL_IMAGE" if="sdl_image" />
-		<file name="src/backend/sdl/SDLStage.cpp"/>
-		<file name="src/backend/sdl/SDLSound.cpp" unless="openal"/>
+		<file name="${SHARED_SRC}/sdl/SDLStage.cpp"/>
+		<file name="${SHARED_SRC}/sdl/SDLSound.cpp" unless="openal"/>
 		
 	</files>
 	
 	
 	<files id="sdl2">
 		
-		<compilerflag value="-Iinclude"/>
-		<compilerflag value="-I${NATIVE_DEV}/include"/>
-		<compilerflag value="-I${NATIVE_DEV}/include/SDL2"/>
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
+		<compilerflag value="-I${STATIC_LIBS}/include"/>
+		<compilerflag value="-I${STATIC_LIBS}/include/SDL2"/>
 		<!-- <compilerflag value="-DLIME_MIXER" /> -->
-		<file name="src/backend/sdl2/SDL2Stage.cpp"/>
+		<file name="${SHARED_SRC}/sdl2/SDL2Stage.cpp"/>
 		<!-- <file name="src/backend/sdl/SDLSound.cpp" unless="openal"/> -->
-		<file name="src/common/empty/Sound.cpp" unless="openal" />
+		<file name="${SHARED_SRC}/empty/Sound.cpp" unless="openal" />
 		
 	</files>
 	
 	
 	<files id="glfw">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
-		<compilerflag value="-I${NATIVE_DEV}/include"/>
+		<compilerflag value="-I${STATIC_LIBS}/include"/>
 		<file name="src/backend/glfw/GLFWStage.cpp"/>
 		
 	</files>
@@ -468,34 +496,36 @@
 	
 	<files id="directfb">
 		
-		<compilerflag value="-Iinclude"/>
+		<compilerflag value="-I${SHARED_INCLUDE}"/>
 		<compilerflag value="-I/usr/include/directfb" />
-		<compilerflag value="-I${NATIVE_DEV}/include"/>
+		<compilerflag value="-I${STATIC_LIBS}/include"/>
 		<compilerflag value="-DLIME_DIRECTFB"/>
 		
-		<file name="src/backend/directfb/DirectFBHardware.cpp"/>
-		<file name="src/backend/directfb/DirectFBStage.cpp"/>
+		<file name="${SHARED_SRC}/directfb/DirectFBHardware.cpp"/>
+		<file name="${SHARED_SRC}/directfb/DirectFBStage.cpp"/>
 		
 	</files>
 	
 	
 	<files id="mac">
 		
+		<compilerflag value="-I${SHARED_INCLUDE1}"/>
+		<compilerflag value="-I${SHARED_INCLUDE2}"/>
 		<compilerflag value="-Iinclude"/>
-		<compilerflag value="-I${NATIVE_DEV}/include" />
-		<compilerflag value="-I${NATIVE_DEV}/include/SDL12" if="sdl" />
-		<compilerflag value="-I${NATIVE_DEV}/include/SDL2" if="sdl2" />
+		<compilerflag value="-I${STATIC_LIBS}/include" />
+		<compilerflag value="-I${STATIC_LIBS}/include/SDL12" if="sdl" />
+		<compilerflag value="-I${STATIC_LIBS}/include/SDL2" if="sdl2" />
 		<compilerflag value="${sdl_dynamic_include2}" if="dynamic_sdl"/>
 		<compilerflag value="-Isrc/sound/openal"/>
 		<compilerflag value="-mmacosx-version-min=10.7" if="macos"/>
-		<file name="src/platform/mac/NSFont.cpp"/>
-		<file name="src/platform/mac/MacBoot.m" />
-		<file name="src/common/empty/URL.cpp" if="nocurl" />
-		<file name="src/common/empty/Sound.cpp" unless="has_sound" />
-		<file name="src/common/empty/Stage.cpp" unless="has_window" />
-		<file name="src/common/empty/HardwareContext.cpp" unless="has_window" />
-		<file name="src/platform/mac/System.mm"/>
-		<file name="src/platform/cocoa/FileManager.mm"/>
+		<file name="${SHARED_SRC}/mac/NSFont.cpp"/>
+		<file name="${SHARED_SRC}/mac/MacBoot.m" />
+		<file name="${SHARED_SRC}/empty/URL.cpp" if="nocurl" />
+		<file name="${SHARED_SRC}/empty/Sound.cpp" unless="has_sound" />
+		<file name="${SHARED_SRC}/empty/Stage.cpp" unless="has_window" />
+		<file name="${SHARED_SRC}/empty/HardwareContext.cpp" unless="has_window" />
+		<file name="${SHARED_SRC}/mac/System.mm"/>
+		<file name="${SHARED_SRC}/cocoa/FileManager.mm"/>
 		<file name="src/sound/openal/OpenALSound.cpp" if="openal"/>
 			
 	</files>
@@ -564,35 +594,35 @@
 		<lib name="${THIRDPARTY_LIBS}libglfw3${name_extra}${SLIBEXT}" if="glfw"/>
 		
 		<lib name="-L${THIRDPARTY_LIBS}" if="tizen"/>
-	  <lib name="-losp-uifw" if="tizen" />
-	  <lib name="-losp-appfw" if="tizen" />
-	  <lib name="-losp-image" if="tizen" />
-	  <lib name="-losp-ime" if="tizen" />
-	  <lib name="-losp-json" if="tizen" />
-	  <lib name="-losp-net" if="tizen" />
-	  <lib name="-losp-content" if="tizen" />
-	  <lib name="-losp-locations" if="tizen" />
-	  <lib name="-losp-telephony" if="tizen" />
-	  <lib name="-losp-uix" if="tizen" />
-	  <lib name="-losp-media" if="tizen" />
-	  <lib name="-losp-messaging" if="tizen" />
-	  <lib name="-losp-web" if="tizen" />
-	  <lib name="-losp-social" if="tizen" />
-	  <lib name="-losp-wifi" if="tizen" />
-	  <lib name="-losp-bluetooth" if="tizen" />
-	  <lib name="-losp-nfc" if="tizen" />
-	  <lib name="-losp-face" if="tizen" />
-	  <lib name="-losp-secure-element" if="tizen" />
-	  <lib name="-losp-speech-tts" if="tizen" />
-	  <lib name="-losp-speech-stt" if="tizen" />
-	  <lib name="-losp-shell" if="tizen" />
-	  <lib name="-losp-shell-core" if="tizen" />
-	  <lib name="-losp-vision" if="tizen" />
-	  <lib name="-lxml2" if="tizen" />
-	  <lib name="-lalut" if="tizen" />
-	  <lib name="-lopenal" if="tizen" />
-	  <lib name="-losp-compat" if="tizen" />
-	  <lib name="-lrt" if="tizen" />
+		<lib name="-losp-uifw" if="tizen" />
+		<lib name="-losp-appfw" if="tizen" />
+		<lib name="-losp-image" if="tizen" />
+		<lib name="-losp-ime" if="tizen" />
+		<lib name="-losp-json" if="tizen" />
+		<lib name="-losp-net" if="tizen" />
+		<lib name="-losp-content" if="tizen" />
+		<lib name="-losp-locations" if="tizen" />
+		<lib name="-losp-telephony" if="tizen" />
+		<lib name="-losp-uix" if="tizen" />
+		<lib name="-losp-media" if="tizen" />
+		<lib name="-losp-messaging" if="tizen" />
+		<lib name="-losp-web" if="tizen" />
+		<lib name="-losp-social" if="tizen" />
+		<lib name="-losp-wifi" if="tizen" />
+		<lib name="-losp-bluetooth" if="tizen" />
+		<lib name="-losp-nfc" if="tizen" />
+		<lib name="-losp-face" if="tizen" />
+		<lib name="-losp-secure-element" if="tizen" />
+		<lib name="-losp-speech-tts" if="tizen" />
+		<lib name="-losp-speech-stt" if="tizen" />
+		<lib name="-losp-shell" if="tizen" />
+		<lib name="-losp-shell-core" if="tizen" />
+		<lib name="-losp-vision" if="tizen" />
+		<lib name="-lxml2" if="tizen" />
+		<lib name="-lalut" if="tizen" />
+		<lib name="-lopenal" if="tizen" />
+		<lib name="-losp-compat" if="tizen" />
+		<lib name="-lrt" if="tizen" />
 	  
 		<lib name="-L${THIRDPARTY_LIBS}" if="linux"/>
 		<lib name="-lrt" if="linux" unless="noopenal" />
@@ -682,8 +712,8 @@
 		<lib name="wldap32.lib" if="win_desktop"/>
 		<lib name="shell32.lib" if="win_desktop"/>
 		<lib name="comdlg32.lib" if="win_desktop"/>
-		<lib name="-ldl" if="linux"/>
-		<lib name="-lGL" if="linux" unless="rpi"/>
+		<!-- <lib name="-ldl" if="linux"/>
+		<lib name="-lGL" if="linux" unless="rpi"/> -->
 		<lib name="-lpthread" if="linux"/>
 		
 		<lib name="D3D11.lib" if="winrt"/>
